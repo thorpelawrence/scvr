@@ -17,20 +17,17 @@ task("clean", () => {
   jake.rmRf("dist");
 });
 
-task("export", ["clean"], () => {
-  exec("expo", ["export", "--dev", "--public-url", "http://127.0.0.1:8000"]);
-});
-
 let server;
-task("serve", ["export"], { async: true }, () => {
+task("serve", { async: true }, () => {
   server = http.createServer((request, response) =>
     handler(request, response, {
       public: "dist",
     })
   );
-  server.listen(8000, () => {
-    jake.logger.log("Serving at http://127.0.0.1:8000");
-    complete();
+  server.listen(0, () => {
+    const { port } = server.address();
+    jake.logger.log(`Serving at http://127.0.0.1:${port}`);
+    complete(port);
   });
 });
 jake.addListener("complete", () => {
@@ -40,14 +37,20 @@ jake.addListener("complete", () => {
   }
 });
 
+task("export", ["clean", "serve"], () => {
+  const port = jake.Task["serve"].value;
+  exec("expo", ["export", "--dev", "--public-url", `http://127.0.0.1:${port}`]);
+});
+
 desc("build android");
 task(
   "android",
-  ["serve"],
+  ["export"],
   () => {
+    const port = jake.Task["serve"].value;
     jake.exec(
       [
-        "turtle build:android --type apk --allow-non-https-public-url --public-url http://127.0.0.1:8000/android-index.json -o build/scvr.apk",
+        `turtle build:android --type apk --allow-non-https-public-url --public-url http://127.0.0.1:${port}/android-index.json -o build/scvr.apk`,
       ],
       { printStdout: true, printStderr: true },
       complete
