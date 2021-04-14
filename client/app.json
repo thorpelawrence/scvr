@@ -1,0 +1,7 @@
+{
+  "name": "scvr",
+  "icon": "./static/icon.png",
+  "android": {
+    "package": "uk.lawrencethorpe.scvr.client"
+  }
+}

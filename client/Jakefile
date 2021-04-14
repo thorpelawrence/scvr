@@ -1,0 +1,57 @@
+const { task, desc } = require("jake");
+const { spawnSync } = require("child_process");
+const handler = require("serve-handler");
+const http = require("http");
+
+const exec = (command, args, options = {}) =>
+  spawnSync(command, args, {
+    stdio: "inherit",
+    ...options,
+  });
+
+desc("build standalone");
+task("default", ["android"]);
+
+desc("clean dist");
+task("clean", () => {
+  jake.rmRf("dist");
+});
+
+task("export", ["clean"], () => {
+  exec("expo", ["export", "--dev", "--public-url", "http://127.0.0.1:8000"]);
+});
+
+let server;
+task("serve", ["export"], { async: true }, () => {
+  server = http.createServer((request, response) =>
+    handler(request, response, {
+      public: "dist",
+    })
+  );
+  server.listen(8000, () => {
+    jake.logger.log("Serving at http://127.0.0.1:8000");
+    complete();
+  });
+});
+jake.addListener("complete", () => {
+  if (server instanceof http.Server) {
+    jake.logger.log("Stopping server");
+    server.close();
+  }
+});
+
+desc("build android");
+task(
+  "android",
+  ["serve"],
+  () => {
+    jake.exec(
+      [
+        "turtle build:android --type apk --allow-non-https-public-url --public-url http://127.0.0.1:8000/android-index.json -o build/scvr.apk",
+      ],
+      { printStdout: true, printStderr: true },
+      complete
+    );
+  },
+  { async: true }
+);
