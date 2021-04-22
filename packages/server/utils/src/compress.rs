@@ -31,19 +31,19 @@ pub fn compress(
         Some(CompressionLevel::Custom(level)) => Compression::new(level.into()),
     };
 
-    if compression_format == Some(CompressionFormat::None) {
-        return Ok(bytes.into());
-    }
-
-    if compression_format == Some(CompressionFormat::Deflate) {
-        let mut encoder = DeflateEncoder::new(Vec::new(), compression_level);
-        encoder.write_all(&bytes)?;
-        let compressed_bytes = encoder.finish()?;
-        return Ok(compressed_bytes);
-    }
-
-    let mut encoder = GzEncoder::new(Vec::new(), compression_level);
-    encoder.write_all(&bytes)?;
-    let compressed_bytes = encoder.finish()?;
-    Ok(compressed_bytes)
+    Ok(match compression_format {
+        Some(CompressionFormat::None) => bytes.into(),
+        Some(CompressionFormat::Deflate) => {
+            let mut encoder = DeflateEncoder::new(Vec::new(), compression_level);
+            encoder.write_all(&bytes)?;
+            let compressed_bytes = encoder.finish()?;
+            compressed_bytes
+        },
+        Some(CompressionFormat::Gzip) | None => {
+            let mut encoder = GzEncoder::new(Vec::new(), compression_level);
+            encoder.write_all(&bytes)?;
+            let compressed_bytes = encoder.finish()?;
+            compressed_bytes
+        },
+    })
 }
