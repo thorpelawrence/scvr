@@ -1,5 +1,5 @@
 [package]
-name = "server"
+name = "utils"
 version = "0.1.0"
 authors = ["Lawrence Thorpe <lawrence@lawrencethorpe.uk>"]
 edition = "2018"
@@ -7,21 +7,7 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-config = "0.11.0"
-dialoguer = "0.8.0"
+brotli = "3.3.0"
+flate2 = "1.0.20"
 get_if_addrs = "0.5.3"
-scrap = "0.5"
-structopt = "0.3.21"
-utils = { path = "utils" }
-
-[dev-dependencies]
-criterion = "0.3.4"
 image = "0.23.14"
-
-[[bench]]
-name = "image"
-harness = false
-
-[[bench]]
-name = "compress"
-harness = false
