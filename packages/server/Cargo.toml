@@ -9,7 +9,6 @@ edition = "2018"
 [dependencies]
 config = "0.11.0"
 dialoguer = "0.8.0"
-get_if_addrs = "0.5.3"
 scrap = "0.5"
 structopt = "0.3.21"
 utils = { path = "utils" }
