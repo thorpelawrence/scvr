@@ -1,6 +1,4 @@
 {
-    "conventionalCommits.scopes": [
-        "client",
-        "server"
-    ]
+  "conventionalCommits.scopes": ["client", "server"],
+  "rust-analyzer.linkedProjects": ["packages/server/Cargo.toml"]
 }
