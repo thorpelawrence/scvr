@@ -28,9 +28,9 @@ struct Cli {
     )]
     quality: u8,
     #[structopt(short, long, name = "Output image width", default_value = "1920")]
-    width: u16,
+    width: u32,
     #[structopt(short, long, name = "Output image height", default_value = "720")]
-    height: u16,
+    height: u32,
     #[structopt(short, long, name = "Compression format", default_value = "deflate")]
     compression_format: compress::CompressionFormat,
     #[structopt(short, long, name = "Compression level")]
@@ -105,8 +105,15 @@ fn main() {
             },
         );
 
-        let transformed_image =
-            image::vr_transform(&image, None, None).expect("Couldn't transform image.");
+        let transformed_image = image::vr_transform(
+            &image,
+            image::Dimensions {
+                width: args.width,
+                height: args.height,
+            },
+            None,
+        )
+        .expect("Couldn't transform image.");
 
         let encoded_image = image::encode_image(transformed_image, args.image_format, args.quality)
             .expect("Couldn't encode image.");

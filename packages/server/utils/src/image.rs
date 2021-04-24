@@ -26,14 +26,11 @@ pub fn bgra_to_image(bytes: &[u8], dimensions: Dimensions<usize>) -> DynamicImag
 
 pub fn vr_transform(
     img: &DynamicImage,
-    ndimensions: Option<Dimensions>,
+    ndimensions: Dimensions,
     alg: Option<FilterType>,
 ) -> ImageResult<DynamicImage> {
     let alg = alg.unwrap_or(FilterType::Lanczos3);
-    let Dimensions { width, height } = ndimensions.unwrap_or(Dimensions {
-        width: 1920,
-        height: 1080,
-    });
+    let Dimensions { width, height } = ndimensions;
     let resized = img.resize(width, height, alg);
     Ok(resized)
 }
@@ -71,7 +68,7 @@ pub fn encode_image(
             let mut encoder = JpegEncoder::new_with_quality(&mut encoded, quality);
             encoder.encode(rgb.as_raw(), width, height, ColorType::Rgb8)?;
             Ok(encoded)
-        },
+        }
         ImageFormat::Bmp => {
             let mut encoder = BmpEncoder::new(&mut encoded);
             encoder.encode(rgb.as_raw(), width, height, ColorType::Rgb8)?;
