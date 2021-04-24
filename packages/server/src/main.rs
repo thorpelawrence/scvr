@@ -120,7 +120,7 @@ fn main() {
 
         stream
             .write(&(compressed_bytes.len() as i32).to_le_bytes())
-            .expect("Couldn't send length.");
+            .expect("Couldn't send data length.");
         stream
             .write_all(&compressed_bytes)
             .expect("Couldn't send data.");
