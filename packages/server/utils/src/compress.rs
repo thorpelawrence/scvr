@@ -2,14 +2,25 @@ use flate2::{
     write::{DeflateEncoder, GzEncoder},
     Compression,
 };
-use std::io::prelude::*;
-use std::io::Error;
+use std::{
+    io::{prelude::*, Error},
+    num::ParseIntError,
+    str::FromStr,
+};
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum CompressionLevel {
     Fast,
     Default,
     Best,
     Custom(u8),
+}
+
+impl FromStr for CompressionLevel {
+    type Err = ParseIntError;
+    fn from_str(level: &str) -> Result<Self, Self::Err> {
+        let level = level.parse::<u8>()?;
+        Ok(CompressionLevel::Custom(level))
+    }
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -19,10 +30,27 @@ pub enum CompressionFormat {
     None,
 }
 
+impl FromStr for CompressionFormat {
+    type Err = String;
+    fn from_str(format: &str) -> Result<Self, Self::Err> {
+        let format = format.to_lowercase();
+        let format = format.trim();
+        match format {
+            "gzip" | "gz" => Ok(Self::Gzip),
+            "deflate" => Ok(Self::Deflate),
+            "none" => Ok(Self::None),
+            _ => Err(format!(
+                "'{}' isn't a valid value for CompressionFormat",
+                format
+            )),
+        }
+    }
+}
+
 pub fn compress(
     bytes: &[u8],
     compression_level: Option<CompressionLevel>,
-    compression_format: Option<CompressionFormat>,
+    compression_format: CompressionFormat,
 ) -> Result<Vec<u8>, Error> {
     let compression_level = match compression_level {
         Some(CompressionLevel::Best) => Compression::best(),
@@ -32,18 +60,18 @@ pub fn compress(
     };
 
     Ok(match compression_format {
-        Some(CompressionFormat::None) => bytes.into(),
-        Some(CompressionFormat::Deflate) => {
+        CompressionFormat::None => bytes.into(),
+        CompressionFormat::Deflate => {
             let mut encoder = DeflateEncoder::new(Vec::new(), compression_level);
             encoder.write_all(&bytes)?;
             let compressed_bytes = encoder.finish()?;
             compressed_bytes
-        },
-        Some(CompressionFormat::Gzip) | None => {
+        }
+        CompressionFormat::Gzip => {
             let mut encoder = GzEncoder::new(Vec::new(), compression_level);
             encoder.write_all(&bytes)?;
             let compressed_bytes = encoder.finish()?;
             compressed_bytes
-        },
+        }
     })
 }

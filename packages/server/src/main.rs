@@ -31,6 +31,10 @@ struct Cli {
     width: u16,
     #[structopt(short, long, name = "Image height", default_value = "720")]
     height: u16,
+    #[structopt(short, long, name = "Compression format", default_value = "deflate")]
+    compression_format: compress::CompressionFormat,
+    #[structopt(short, long, name = "Compression level")]
+    compression_level: Option<compress::CompressionLevel>,
 }
 
 fn main() {
@@ -109,8 +113,8 @@ fn main() {
 
         let compressed_bytes = compress::compress(
             &encoded_image,
-            None,
-            Some(utils::compress::CompressionFormat::Deflate),
+            args.compression_level,
+            args.compression_format,
         )
         .expect("Couldn't compress image.");
 
