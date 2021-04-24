@@ -116,7 +116,7 @@ fn main() {
             args.compression_level,
             args.compression_format,
         )
-        .expect("Couldn't compress image.");
+        .expect("Couldn't compress image data.");
 
         stream
             .write(&(compressed_bytes.len() as i32).to_le_bytes())
