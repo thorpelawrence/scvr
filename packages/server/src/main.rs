@@ -18,7 +18,12 @@ struct Cli {
     port: Option<u16>,
     #[structopt(short = "l", long, name = "FPS limit", default_value = "60")]
     fps: u8,
-    #[structopt(short = "f", long, name = "Output image format", default_value = "jpeg")]
+    #[structopt(
+        short = "f",
+        long,
+        name = "Output image format",
+        default_value = "jpeg"
+    )]
     image_format: image::ImageFormat,
     #[structopt(
         short = "q",
