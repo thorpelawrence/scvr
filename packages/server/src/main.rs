@@ -16,7 +16,7 @@ struct Cli {
     ip: Option<IpAddr>,
     #[structopt(short, long, name = "Port")]
     port: Option<u16>,
-    #[structopt(short = "l", long, name = "FPS limit", default_value = "60")]
+    #[structopt(short = "l", long, name = "FPS limit", default_value = "30")]
     fps: u8,
     #[structopt(
         short = "f",
@@ -36,7 +36,7 @@ struct Cli {
     width: u32,
     #[structopt(short, long, name = "Output image height", default_value = "720")]
     height: u32,
-    #[structopt(short, long, name = "Compression format", default_value = "deflate")]
+    #[structopt(long, name = "Compression format", default_value = "deflate")]
     compression_format: compress::CompressionFormat,
     #[structopt(short, long, name = "Compression level")]
     compression_level: Option<compress::CompressionLevel>,
