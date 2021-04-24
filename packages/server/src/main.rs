@@ -18,7 +18,7 @@ struct Cli {
     port: Option<u16>,
     #[structopt(short = "l", long, name = "FPS limit", default_value = "60")]
     fps: u8,
-    #[structopt(short = "f", long, name = "Image format", default_value = "jpeg")]
+    #[structopt(short = "f", long, name = "Output image format", default_value = "jpeg")]
     image_format: image::ImageFormat,
     #[structopt(
         short = "q",
@@ -27,9 +27,9 @@ struct Cli {
         default_value = "75"
     )]
     quality: u8,
-    #[structopt(short, long, name = "Image width", default_value = "1920")]
+    #[structopt(short, long, name = "Output image width", default_value = "1920")]
     width: u16,
-    #[structopt(short, long, name = "Image height", default_value = "720")]
+    #[structopt(short, long, name = "Output image height", default_value = "720")]
     height: u16,
     #[structopt(short, long, name = "Compression format", default_value = "deflate")]
     compression_format: compress::CompressionFormat,
