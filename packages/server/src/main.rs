@@ -77,12 +77,12 @@ fn main() {
         Ok(stream) => stream,
     };
 
-    let one_second = Duration::from_secs(1);
-    let one_frame = one_second / args.fps.into();
-
     let display = Display::primary().expect("Couldn't find primary display.");
     let mut capturer = Capturer::new(display).expect("Couldn't begin capture.");
     let (w, h) = (capturer.width(), capturer.height());
+
+    let one_second = Duration::from_secs(1);
+    let one_frame = one_second / args.fps.into();
 
     loop {
         let buffer = match capturer.frame() {
