@@ -19,6 +19,9 @@ jobs:
           profile: minimal
           toolchain: stable
           components: rustfmt, clippy
+      - name: Install dependencies
+        if: ${{ matrix.os != 'windows-latest' }}
+        run: sudo apt install -y libxcb-randr0-dev libxcb-shm0
       - name: Release build
         uses: actions-rs/cargo@v1
         with:
