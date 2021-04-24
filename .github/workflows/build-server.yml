@@ -10,7 +10,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
       - name: Stable with rustfmt and clippy
@@ -25,7 +25,7 @@ jobs:
           command: build
           args: --release --all-features
       - name: Strip debug symbols
-        if: ${{ matrix.os != "windows-latest" }}
+        if: ${{ matrix.os != 'windows-latest' }}
         run: strip target/release/server
       - uses: actions/upload-artifact@v2
         with:
