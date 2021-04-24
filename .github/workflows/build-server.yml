@@ -33,4 +33,6 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: server-${{ matrix.os }}
-          path: packages/server/target/release/
+          path: |
+            packages/server/target/release/server
+            packages/server/target/release/server.exe
