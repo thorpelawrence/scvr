@@ -50,8 +50,8 @@ impl FromStr for ImageFormat {
         let format = format.to_lowercase();
         let format = format.trim();
         match format {
-            "jpeg" | "jpg" => Ok(ImageFormat::Jpeg),
-            "bmp" | "bitmap" => Ok(ImageFormat::Bmp),
+            "jpeg" | "jpg" => Ok(Self::Jpeg),
+            "bmp" | "bitmap" => Ok(Self::Bmp),
             _ => Err(format!("'{}' isn't a valid value for ImageFormat", format)),
         }
     }
