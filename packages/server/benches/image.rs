@@ -50,7 +50,18 @@ pub fn vr(c: &mut Criterion) {
         group.bench_with_input(
             BenchmarkId::from_parameter(format!("{:?}", alg)),
             alg,
-            |b, &alg| b.iter(|| vr_transform(&img, None, Some(alg))),
+            |b, &alg| {
+                b.iter(|| {
+                    vr_transform(
+                        &img,
+                        Dimensions {
+                            width: 1920,
+                            height: 1080,
+                        },
+                        Some(alg),
+                    )
+                })
+            },
         );
     }
     group.finish();

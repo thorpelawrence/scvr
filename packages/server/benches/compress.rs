@@ -19,7 +19,7 @@ pub fn compress_levels(c: &mut Criterion) {
         group.bench_with_input(
             BenchmarkId::from_parameter(format!("{:?}", level)),
             level,
-            |b, &level| b.iter(|| utils::compress::compress(&bytes, Some(level), None)),
+            |b, &level| b.iter(|| utils::compress::compress(&bytes, Some(level), CompressionFormat::Deflate)),
         );
     }
     group.finish();
@@ -42,7 +42,7 @@ pub fn compress_formats(c: &mut Criterion) {
         group.bench_with_input(
             BenchmarkId::from_parameter(format!("{:?}", format)),
             format,
-            |b, &level| b.iter(|| utils::compress::compress(&bytes, None, Some(level))),
+            |b, &level| b.iter(|| utils::compress::compress(&bytes, None, level)),
         );
     }
     group.finish();
