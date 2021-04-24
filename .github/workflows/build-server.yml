@@ -32,4 +32,5 @@ jobs:
         run: strip packages/server/target/release/server
       - uses: actions/upload-artifact@v2
         with:
+          name: server-${{ matrix.os }}
           path: packages/server/target/release/
