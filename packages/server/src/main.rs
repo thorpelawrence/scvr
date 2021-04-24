@@ -71,7 +71,7 @@ fn main() {
             "{}",
             match why {
                 SocketError::AcceptError => "Couldn't connect.",
-                SocketError::SetOptionError => "Couldn't set TCP options.",
+                SocketError::SetOptionError => "Couldn't set TCP option.",
             }
         ),
         Ok(stream) => stream,
