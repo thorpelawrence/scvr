@@ -1,7 +1,9 @@
 use image::{
-    codecs::jpeg::JpegEncoder, imageops::FilterType, Bgr, ColorType, DynamicImage,
-    GenericImageView, ImageBuffer, ImageError, ImageResult,
+    codecs::{bmp::BmpEncoder, jpeg::JpegEncoder},
+    imageops::FilterType,
+    Bgr, ColorType, DynamicImage, GenericImageView, ImageBuffer, ImageError, ImageResult,
 };
+use std::str::FromStr;
 
 pub struct Dimensions<T = u32> {
     pub width: T,
@@ -36,12 +38,44 @@ pub fn vr_transform(
     Ok(resized)
 }
 
-pub fn encode_jpeg(img: DynamicImage, quality: Option<u8>) -> Result<Vec<u8>, ImageError> {
-    let quality = quality.unwrap_or(75);
-    let mut jpeg = Vec::new();
-    let mut encoder = JpegEncoder::new_with_quality(&mut jpeg, quality);
+#[derive(Debug, Clone, Copy)]
+pub enum ImageFormat {
+    Jpeg,
+    Bmp,
+}
+
+impl FromStr for ImageFormat {
+    type Err = String;
+    fn from_str(format: &str) -> Result<Self, Self::Err> {
+        let format = format.to_lowercase();
+        let format = format.trim();
+        match format {
+            "jpeg" | "jpg" => Ok(ImageFormat::Jpeg),
+            "bmp" | "bitmap" => Ok(ImageFormat::Bmp),
+            _ => Err(format!("'{}' isn't a valid value for ImageFormat", format)),
+        }
+    }
+}
+
+pub fn encode_image(
+    img: DynamicImage,
+    format: ImageFormat,
+    quality: u8,
+) -> Result<Vec<u8>, ImageError> {
+    let mut encoded = Vec::new();
     let (width, height) = (img.width(), img.height());
     let rgb = img.into_rgb8();
-    encoder.encode(rgb.as_raw(), width, height, ColorType::Rgb8)?;
-    Ok(jpeg)
+
+    match format {
+        ImageFormat::Jpeg => {
+            let mut encoder = JpegEncoder::new_with_quality(&mut encoded, quality);
+            encoder.encode(rgb.as_raw(), width, height, ColorType::Rgb8)?;
+            Ok(encoded)
+        },
+        ImageFormat::Bmp => {
+            let mut encoder = BmpEncoder::new(&mut encoded);
+            encoder.encode(rgb.as_raw(), width, height, ColorType::Rgb8)?;
+            Ok(encoded)
+        }
+    }
 }

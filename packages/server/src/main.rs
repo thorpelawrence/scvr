@@ -16,10 +16,17 @@ struct Cli {
     ip: Option<IpAddr>,
     #[structopt(short, long, name = "Port")]
     port: Option<u16>,
-    #[structopt(short, long, name = "FPS limit", default_value = "60")]
+    #[structopt(short = "l", long, name = "FPS limit", default_value = "60")]
     fps: u8,
-    #[structopt(short = "q", long = "quality", name = "JPEG quality")]
-    quality: Option<u8>,
+    #[structopt(short = "f", long, name = "Image format", default_value = "jpeg")]
+    image_format: image::ImageFormat,
+    #[structopt(
+        short = "q",
+        long = "quality",
+        name = "JPEG quality",
+        default_value = "75"
+    )]
+    quality: u8,
     #[structopt(short, long, name = "Image width", default_value = "1920")]
     width: u16,
     #[structopt(short, long, name = "Image height", default_value = "720")]
@@ -55,8 +62,7 @@ fn main() {
         ),
         Ok(listener) => listener,
     };
-
-    let (mut socket, _) = match network::socket::get_socket(listener) {
+    let (mut stream, _) = match network::socket::get_socket(listener) {
         Err(why) => panic!(
             "{}",
             match why {
@@ -64,7 +70,7 @@ fn main() {
                 SocketError::SetOptionError => "Couldn't set TCP options.",
             }
         ),
-        Ok(socket) => socket,
+        Ok(stream) => stream,
     };
 
     let one_second = Duration::from_secs(1);
@@ -98,13 +104,20 @@ fn main() {
         let transformed_image =
             image::vr_transform(&image, None, None).expect("Couldn't transform image.");
 
-        let jpeg =
-            image::encode_jpeg(transformed_image, args.quality).expect("Couldn't encode image.");
+        let encoded_image = image::encode_image(transformed_image, args.image_format, args.quality)
+            .expect("Couldn't encode image.");
 
-        let compressed_bytes =
-            compress::compress(&jpeg, None, None).expect("Couldn't compress image.");
+        let compressed_bytes = compress::compress(
+            &encoded_image,
+            None,
+            Some(utils::compress::CompressionFormat::Deflate),
+        )
+        .expect("Couldn't compress image.");
 
-        socket
+        stream
+            .write(&(compressed_bytes.len() as i32).to_le_bytes())
+            .expect("Couldn't send length.");
+        stream
             .write_all(&compressed_bytes)
             .expect("Couldn't send data.");
     }
