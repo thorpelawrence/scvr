@@ -34,7 +34,7 @@ struct Cli {
     quality: u8,
     #[structopt(short, long, name = "Output image width", default_value = "1920")]
     width: u32,
-    #[structopt(short, long, name = "Output image height", default_value = "720")]
+    #[structopt(short, long, name = "Output image height", default_value = "1080")]
     height: u32,
     #[structopt(long, name = "Compression format", default_value = "deflate")]
     compression_format: compress::CompressionFormat,
