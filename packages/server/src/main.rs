@@ -40,6 +40,10 @@ struct Cli {
     compression_format: compress::CompressionFormat,
     #[structopt(short, long, name = "Compression level")]
     compression_level: Option<compress::CompressionLevel>,
+    #[structopt(long, name = "Interpupillary distance", default_value = "60")]
+    ipd: i16,
+    #[structopt(short, long, name = "Scale", default_value = "1.15")]
+    scale: f32,
 }
 
 fn main() {
@@ -116,6 +120,8 @@ fn main() {
                 width: args.width,
                 height: args.height,
             },
+            args.ipd,
+            args.scale,
             None,
         )
         .expect("Couldn't transform image.");

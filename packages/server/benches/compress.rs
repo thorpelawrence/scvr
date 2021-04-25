@@ -4,7 +4,7 @@ use utils::compress::{CompressionFormat, CompressionLevel};
 mod inputs;
 
 pub fn compress_levels(c: &mut Criterion) {
-    let bytes = inputs::get_image(inputs::SCREENSHOT).into_bytes();
+    let bytes = inputs::get_image(inputs::SCREENSHOT_VR).into_bytes();
 
     let mut group = c.benchmark_group("Compression levels");
     group.throughput(Throughput::Elements(1));
@@ -26,7 +26,7 @@ pub fn compress_levels(c: &mut Criterion) {
 }
 
 pub fn compress_formats(c: &mut Criterion) {
-    let bytes = inputs::get_image(inputs::SCREENSHOT).into_bytes();
+    let bytes = inputs::get_image(inputs::SCREENSHOT_VR).into_bytes();
 
     let mut group = c.benchmark_group("Compression formats");
     group.throughput(Throughput::Elements(1));

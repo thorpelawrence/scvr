@@ -58,6 +58,8 @@ pub fn vr(c: &mut Criterion) {
                             width: 1920,
                             height: 1080,
                         },
+                        60,
+                        1.15,
                         Some(alg),
                     )
                 })

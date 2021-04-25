@@ -1,4 +1,5 @@
 pub static SCREENSHOT: &'static str = "KDE_Plasma_5.15.jpg";
+pub static SCREENSHOT_VR: &'static str = "KDE_Plasma_5.15-vr.jpg";
 
 pub fn get_input(name: &str) -> String {
     format!("benches/inputs/{}", name)
