@@ -34,6 +34,7 @@ pub fn compress_formats(c: &mut Criterion) {
     for (sample_size, format) in [
         (100, CompressionFormat::Deflate),
         (100, CompressionFormat::Gzip),
+        (100, CompressionFormat::Zlib),
         (100, CompressionFormat::None),
     ]
     .iter()

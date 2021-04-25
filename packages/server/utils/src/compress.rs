@@ -1,7 +1,4 @@
-use flate2::{
-    write::{DeflateEncoder, GzEncoder},
-    Compression,
-};
+use flate2::{Compression, write::{DeflateEncoder, GzEncoder, ZlibEncoder}};
 use std::{
     io::{prelude::*, Error},
     num::ParseIntError,
@@ -27,6 +24,7 @@ impl FromStr for CompressionLevel {
 pub enum CompressionFormat {
     Gzip,
     Deflate,
+    Zlib,
     None,
 }
 
@@ -38,6 +36,7 @@ impl FromStr for CompressionFormat {
         match format {
             "gzip" | "gz" => Ok(Self::Gzip),
             "deflate" => Ok(Self::Deflate),
+            "zlib" => Ok(Self::Zlib),
             "none" => Ok(Self::None),
             _ => Err(format!(
                 "'{}' isn't a valid value for CompressionFormat",
@@ -63,6 +62,12 @@ pub fn compress(
         CompressionFormat::None => bytes.into(),
         CompressionFormat::Deflate => {
             let mut encoder = DeflateEncoder::new(Vec::new(), compression_level);
+            encoder.write_all(&bytes)?;
+            let compressed_bytes = encoder.finish()?;
+            compressed_bytes
+        }
+        CompressionFormat::Zlib => {
+            let mut encoder = ZlibEncoder::new(Vec::new(), compression_level);
             encoder.write_all(&bytes)?;
             let compressed_bytes = encoder.finish()?;
             compressed_bytes
