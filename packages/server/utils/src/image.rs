@@ -50,7 +50,7 @@ fn timestamp_image(image: &mut ImageBuffer<Bgr<u8>, Vec<u8>>, x: u32, y: u32, he
     let font = get_default_font();
 
     let scale = rusttype::Scale {
-        x: height * 1.4,
+        x: height,
         y: height,
     };
 
@@ -119,6 +119,7 @@ pub fn vr_transform(
     ipd: i16,
     scale: f32,
     alg: ResizeAlgorithm,
+    no_timestamp: bool,
 ) -> ImageResult<DynamicImage> {
     let Dimensions { width, height } = ndimensions;
 
@@ -153,9 +154,11 @@ pub fn vr_transform(
         scaled_height,
     );
 
-    let font_size = 50;
-    let (timestamp_x, timestamp_y) = (margin_left_right * 3, margin_top_bottom - font_size * 2);
-    timestamp_image(&mut image, timestamp_x, timestamp_y, font_size as f32);
+    if !no_timestamp {
+        let font_size = 50;
+        let (timestamp_x, timestamp_y) = (margin_left_right * 3, margin_top_bottom - font_size * 2);
+        timestamp_image(&mut image, timestamp_x, timestamp_y, font_size as f32);
+    }
 
     Ok(DynamicImage::ImageBgr8(image))
 }

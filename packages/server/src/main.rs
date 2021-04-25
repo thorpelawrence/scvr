@@ -51,6 +51,8 @@ struct Cli {
         default_value = "linear"
     )]
     resizing_algorithm: image::ResizeAlgorithm,
+    #[structopt(long, name = "Disable image timestamp")]
+    no_timestamp: bool,
 }
 
 fn main() {
@@ -130,6 +132,7 @@ fn main() {
             args.ipd,
             args.scale,
             args.resizing_algorithm,
+            args.no_timestamp,
         )
         .expect("Couldn't transform image.");
 

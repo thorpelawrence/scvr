@@ -61,6 +61,7 @@ pub fn vr(c: &mut Criterion) {
                         60,
                         1.15,
                         alg,
+                        false,
                     )
                 })
             },
