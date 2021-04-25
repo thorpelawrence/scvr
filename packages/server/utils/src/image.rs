@@ -76,14 +76,50 @@ fn timestamp_image(image: &mut ImageBuffer<Bgr<u8>, Vec<u8>>, x: u32, y: u32, he
     );
 }
 
+#[derive(Debug, Clone, Copy)]
+pub enum ResizeAlgorithm {
+    NearestNeighbour,
+    Linear,
+    Cubic,
+    Gaussian,
+    Lanczos3,
+}
+
+impl ResizeAlgorithm {
+    fn filter_type(self) -> FilterType {
+        match self {
+            Self::NearestNeighbour => FilterType::Nearest,
+            Self::Linear => FilterType::Triangle,
+            Self::Cubic => FilterType::CatmullRom,
+            Self::Gaussian => FilterType::Gaussian,
+            Self::Lanczos3 => FilterType::Lanczos3,
+        }
+    }
+}
+
+impl FromStr for ResizeAlgorithm {
+    type Err = String;
+    fn from_str(alg: &str) -> Result<Self, Self::Err> {
+        let alg = alg.to_lowercase();
+        let alg = alg.trim();
+        match alg {
+            "nn" | "nearest" | "nearest_neighbour" => Ok(Self::NearestNeighbour),
+            "linear" | "triangle" => Ok(Self::Linear),
+            "cubic" | "catmullrom" => Ok(Self::Cubic),
+            "gaussian" => Ok(Self::Gaussian),
+            "lanczoz3" | "lanczoz" => Ok(Self::Lanczos3),
+            _ => Err(format!("'{}' isn't a valid value for ResizeAlgorithm", alg)),
+        }
+    }
+}
+
 pub fn vr_transform(
     img: &DynamicImage,
     ndimensions: Dimensions,
     ipd: i16,
     scale: f32,
-    alg: Option<FilterType>,
+    alg: ResizeAlgorithm,
 ) -> ImageResult<DynamicImage> {
-    let alg = alg.unwrap_or(FilterType::Triangle);
     let Dimensions { width, height } = ndimensions;
 
     let (scaled_width, scaled_height) = (
@@ -97,7 +133,7 @@ pub fn vr_transform(
 
     let mut image = ImageBuffer::<Bgr<u8>, Vec<u8>>::new(width, height);
     let resized = img
-        .resize_exact(scaled_width, scaled_height, alg)
+        .resize_exact(scaled_width, scaled_height, alg.filter_type())
         .into_bgr8();
 
     copy_to_sub_image(

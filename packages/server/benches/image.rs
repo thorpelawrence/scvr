@@ -31,18 +31,18 @@ fn buffer(c: &mut Criterion) {
 }
 
 pub fn vr(c: &mut Criterion) {
-    use image::imageops::FilterType;
+    use utils::image::ResizeAlgorithm;
     let img = get_image(inputs::SCREENSHOT);
 
     let mut group = c.benchmark_group("Resizing algorithms");
     group.throughput(Throughput::Elements(1));
 
     for (sample_size, alg) in [
-        (50, FilterType::Nearest),
-        (30, FilterType::Triangle),
-        (20, FilterType::CatmullRom),
-        (20, FilterType::Gaussian),
-        (20, FilterType::Lanczos3),
+        (50, ResizeAlgorithm::NearestNeighbour),
+        (30, ResizeAlgorithm::Linear),
+        (20, ResizeAlgorithm::Cubic),
+        (20, ResizeAlgorithm::Gaussian),
+        (20, ResizeAlgorithm::Lanczos3),
     ]
     .iter()
     {
@@ -60,7 +60,7 @@ pub fn vr(c: &mut Criterion) {
                         },
                         60,
                         1.15,
-                        Some(alg),
+                        alg,
                     )
                 })
             },

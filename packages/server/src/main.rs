@@ -44,6 +44,13 @@ struct Cli {
     ipd: i16,
     #[structopt(short, long, name = "Scale", default_value = "1.15")]
     scale: f32,
+    #[structopt(
+        short = "a",
+        long,
+        name = "Resizing algorithm",
+        default_value = "linear"
+    )]
+    resizing_algorithm: image::ResizeAlgorithm,
 }
 
 fn main() {
@@ -122,7 +129,7 @@ fn main() {
             },
             args.ipd,
             args.scale,
-            None,
+            args.resizing_algorithm,
         )
         .expect("Couldn't transform image.");
 
