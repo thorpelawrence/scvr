@@ -107,13 +107,14 @@ fn main() {
             Ok(buffer) => buffer,
             Err(error) => {
                 if error.kind() == WouldBlock {
-                    thread::sleep(one_frame);
                     continue;
                 } else {
                     panic!("Error: {}", error);
                 }
             }
         };
+
+        thread::sleep(one_frame);
 
         let image = image::bgra_to_image(
             &buffer,
