@@ -30,10 +30,9 @@ pub fn get_socket(listener: TcpListener) -> Result<(TcpStream, SocketAddr), Sock
         Err(_) => return Err(SocketError::AcceptError),
         Ok(socket) => socket,
     };
-    match stream.set_nodelay(true) {
-        Err(_) => return Err(SocketError::SetOptionError),
-        _ => (),
-    };
+    if stream.set_nodelay(true).is_err() {
+        return Err(SocketError::SetOptionError);
+    }
     println!("Accepted: {}:{}", addr.ip(), addr.port());
     Ok((stream, addr))
 }

@@ -124,12 +124,12 @@ pub fn vr_transform(
     let Dimensions { width, height } = ndimensions;
 
     let (scaled_width, scaled_height) = (
-        ((width as f32 / 3 as f32) * scale) as u32,
-        ((height as f32 / 3 as f32) * scale) as u32,
+        ((width as f32 / 3_f32) * scale) as u32,
+        ((height as f32 / 3_f32) * scale) as u32,
     );
     let (margin_top_bottom, margin_left_right) = (
-        ((height - scaled_height) as f32 / 2 as f32) as u32,
-        (((scaled_width as f32 / 3 as f32) as i32) - ipd as i32) as u32,
+        ((height - scaled_height) as f32 / 2_f32) as u32,
+        (((scaled_width as f32 / 3_f32) as i32) - ipd as i32) as u32,
     );
 
     let mut image = ImageBuffer::<Bgr<u8>, Vec<u8>>::new(width, height);

@@ -63,20 +63,17 @@ pub fn compress(
         CompressionFormat::Deflate => {
             let mut encoder = DeflateEncoder::new(Vec::new(), compression_level);
             encoder.write_all(&bytes)?;
-            let compressed_bytes = encoder.finish()?;
-            compressed_bytes
+            encoder.finish()?
         }
         CompressionFormat::Zlib => {
             let mut encoder = ZlibEncoder::new(Vec::new(), compression_level);
             encoder.write_all(&bytes)?;
-            let compressed_bytes = encoder.finish()?;
-            compressed_bytes
+            encoder.finish()?
         }
         CompressionFormat::Gzip => {
             let mut encoder = GzEncoder::new(Vec::new(), compression_level);
             encoder.write_all(&bytes)?;
-            let compressed_bytes = encoder.finish()?;
-            compressed_bytes
+            encoder.finish()?
         }
     })
 }
