@@ -1,4 +1,5 @@
 {
   "conventionalCommits.scopes": ["client", "server"],
-  "rust-analyzer.linkedProjects": ["packages/server/Cargo.toml"]
+  "rust-analyzer.linkedProjects": ["packages/server/Cargo.toml"],
+  "rust-analyzer.checkOnSave.command": "clippy"
 }
