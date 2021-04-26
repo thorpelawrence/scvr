@@ -20,7 +20,7 @@ jobs:
           toolchain: stable
           components: rustfmt, clippy
       - name: Install dependencies
-        if: startsWith(matrix.os, 'ubuntu')
+        if: "startsWith(matrix.os, 'ubuntu')"
         run: sudo apt install -y libxcb-randr0-dev libxcb-shm0
       - name: Release build
         uses: actions-rs/cargo@v1
@@ -28,7 +28,7 @@ jobs:
           command: build
           args: --release --all-features --manifest-path packages/server/Cargo.toml
       - name: Strip debug symbols
-        if: !startsWith(matrix.os, 'windows')
+        if: "!startsWith(matrix.os, 'windows')"
         run: strip packages/server/target/release/server
       - uses: actions/upload-artifact@v2
         with:
