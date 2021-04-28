@@ -1,4 +1,7 @@
-use flate2::{Compression, write::{DeflateEncoder, GzEncoder, ZlibEncoder}};
+use flate2::{
+    write::{DeflateEncoder, GzEncoder, ZlibEncoder},
+    Compression,
+};
 use std::{
     io::{prelude::*, Error},
     num::ParseIntError,
