@@ -109,7 +109,7 @@ fn main() {
                 if error.kind() == WouldBlock {
                     continue;
                 } else {
-                    panic!("Error: {}", error);
+                    panic!("Couldn't capture: {}.", error);
                 }
             }
         };
