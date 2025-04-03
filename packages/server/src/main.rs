@@ -1,11 +1,11 @@
+use crossbeam::channel::unbounded;
 use dialoguer::Select;
-use scrap::{Capturer, Display};
+use scap::capturer::Capturer;
+use scap::capturer::Options;
+use scap::frame::Frame;
 use std::io::prelude::*;
-use std::io::ErrorKind::WouldBlock;
 use std::net::IpAddr;
 use std::thread;
-use std::time::Duration;
-use std::time::Instant;
 use structopt::StructOpt;
 use utils::network::socket::{ListenerError, SocketError};
 use utils::{compress, image, network};
@@ -96,35 +96,29 @@ fn main() {
         Ok(stream) => stream,
     };
 
-    let display = Display::primary().expect("Couldn't find primary display.");
-    let mut capturer = Capturer::new(display).expect("Couldn't begin capture.");
-    let (w, h) = (capturer.width(), capturer.height());
+    if !scap::is_supported() {
+        panic!("Platform not supported by scap.")
+    }
 
-    let one_second = Duration::from_secs(1);
-    let one_frame = one_second / args.fps.into();
+    if !scap::has_permission() {
+        if !scap::request_permission() {
+            panic!("Permission denied to scap.")
+        }
+    }
 
-    loop {
-        let loop_time = Instant::now();
+    let mut recorder = Capturer::build(Options {
+        fps: args.fps.into(),
+        show_cursor: true,
+        ..Default::default()
+    })
+    .expect("Couldn't build capturer.");
 
-        let buffer = match capturer.frame() {
-            Ok(buffer) => buffer,
-            Err(error) => {
-                if error.kind() == WouldBlock {
-                    continue;
-                } else {
-                    panic!("Couldn't capture: {}.", error);
-                }
-            }
-        };
+    recorder.start_capture();
 
-        let image = image::bgra_to_image(
-            &buffer,
-            image::Dimensions {
-                width: w,
-                height: h,
-            },
-        );
+    let (s, r) = unbounded();
 
+    thread::spawn(move || loop {
+        let image = r.recv().expect("Couldn't receive from channel.");
         let transformed_image = image::vr_transform(
             &image,
             image::Dimensions {
@@ -154,10 +148,47 @@ fn main() {
         stream
             .write_all(&compressed_bytes)
             .expect("Couldn't send data.");
+    });
 
-        let loop_elapsed = loop_time.elapsed();
-        if loop_elapsed < one_frame {
-            thread::sleep(one_frame - loop_elapsed);
+    loop {
+        let frame = match recorder.get_next_frame() {
+            Ok(frame) => frame,
+            Err(error) => {
+                panic!("Couldn't capture {}.", error);
+            }
+        };
+
+        if !s.is_empty() {
+            continue;
         }
+
+        let image = match frame {
+            Frame::BGRx(frame) => image::bgrx_to_image(
+                &frame.data,
+                image::Dimensions {
+                    width: frame.width as usize,
+                    height: frame.height as usize,
+                },
+            ),
+            Frame::BGRA(_frame) => {
+                todo!()
+            }
+            Frame::YUVFrame(_frame) => {
+                todo!()
+            }
+            Frame::RGB(_frame) => {
+                todo!()
+            }
+            Frame::RGBx(_frame) => {
+                todo!()
+            }
+            Frame::XBGR(_frame) => {
+                todo!()
+            }
+            Frame::BGR0(_frame) => {
+                todo!()
+            }
+        };
+        s.send(image).expect("Couldn't send image to channel.");
     }
 }

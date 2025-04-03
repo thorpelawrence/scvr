@@ -14,17 +14,13 @@ pub struct Dimensions<T = u32> {
     pub height: T,
 }
 
-pub fn bgra_to_image(bytes: &[u8], dimensions: Dimensions<usize>) -> DynamicImage {
+pub fn bgrx_to_image(bytes: &[u8], dimensions: Dimensions<usize>) -> DynamicImage {
     let (w, h) = (dimensions.width, dimensions.height);
-    let stride = bytes.len() / h as usize;
-    let mut img = ImageBuffer::<Bgr<u8>, Vec<u8>>::new(w as u32, h as u32);
-    for y in 0..h {
-        for x in 0..w {
-            let i = stride * y + 4 * x;
-            *img.get_pixel_mut(x as u32, y as u32) =
-                image::Bgr([bytes[i], bytes[i + 1], bytes[i + 2]])
-        }
-    }
+    let stride = bytes.len() / h;
+    let img = ImageBuffer::from_fn(w as u32, h as u32, |x, y| {
+        let i = stride * y as usize + 4 * x as usize;
+        return image::Bgr([bytes[i], bytes[i+1], bytes[i+2]]);
+    });
     DynamicImage::ImageBgr8(img)
 }
 

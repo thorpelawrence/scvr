@@ -5,8 +5,9 @@ authors = ["Lawrence Thorpe <lawrence@lawrencethorpe.uk>"]
 edition = "2018"
 
 [dependencies]
+crossbeam = "0.8.4"
 dialoguer = "0.8.0"
-scrap = "0.5"
+scap = "0.0.8"
 structopt = "0.3.21"
 utils = { path = "utils" }
 
